@@ -25,7 +25,7 @@ from abc import ABC, abstractmethod
 from huggingface_hub import hf_hub_download
 
 from utilities import ws, print_msg
-from path_constants import VSLAMLAB_BASELINES, TRAJECTORY_FILE_NAME
+from path_constants import VSLAMLAB_BASELINES, TRAJECTORY_FILE_NAME, VSLAMLAB_VERBOSITY
 
 SCRIPT_LABEL = f"\033[95m[{Path(__file__).name}]\033[0m "
 
@@ -252,7 +252,11 @@ class BaselineVSLAMLab(ABC):
         memory_stats = {}
         with open(log_file_path, 'w') as log_file:
             print(f"{ws(8)}log file: {log_file_path}")
-            process = subprocess.Popen(command, shell=True, stdout=log_file, stderr=log_file, text=True, preexec_fn=os.setsid)
+            if VSLAMLAB_VERBOSITY == 0:
+                process = subprocess.Popen(command, shell=True, stdout=log_file, stderr=log_file, text=True, preexec_fn=os.setsid)
+            else:
+                process = subprocess.Popen(command, shell=True, preexec_fn=os.setsid)
+                
             memory_thread = threading.Thread(target=self.monitor_memory, args=(process, 10, comment_queue, success_flag, memory_stats))
             memory_thread.start()
 

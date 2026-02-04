@@ -36,10 +36,12 @@ droidslam-dev = { features = ["droidslam-dev", "cuda126", "py11"], solve-group =
 dpvo-dev = { features = ["dpvo-dev", "cuda126", "py11", "x11", "opengl"], solve-group = "droid" }
 monogs-dev = { features = ["monogs-dev", "cuda126", "py10"], solve-group = "monogs" }
 orbslam2-dev = { features = ["orbslam2-dev", "x11", "opengl"], solve-group = "orb" }
-anyfeature-dev = { features = ["anyfeature-dev", "x11", "opengl"], solve-group = "anyfeature" }
+anyfeature-dev = { features = ["anyfeature-dev", "cuda126", "x11", "opengl"]}
 orbslam3-dev = { features = ["orbslam3-dev", "x11", "opengl"], solve-group = "orb" }
 okvis2-dev = { features = ["okvis2-dev", "cuda126", "py11"], solve-group = "okvis" }
 vggtslam-dev = { features = ["vggtslam-dev", "cuda126", "py11", "vggt"], solve-group = "vggt" }
+
+allfeature-dev = { features = ["allfeature-dev", "cuda126", "x11", "opengl"] }
 
 lightglue = { features = ["lightglue", "cuda126", "py11"], solve-group = "lightglue" }
 
@@ -133,7 +135,8 @@ psutil = "*"
 loguru = "*"
 utm = "*"
 7zip = "*"
-
+viser = "*"
+open3d = "*"
 ########################################################################################################################
 ########################################################################################################################
 # droidslam 
@@ -771,8 +774,11 @@ pangolin = { channel = "fontan" }
 ########################################################################################################################
 # anyfeature-dev
 [feature.anyfeature-dev]
-channels = ["fontan", "https://prefix.dev/conda-forge"]
+channels = ["https://prefix.dev/conda-forge", "fontan"]
 platforms = ["linux-64"]
+
+[feature.anyfeature-dev.system-requirements]
+cuda = "12.0"
 
 [feature.anyfeature-dev.tasks]
 git-clone = "./git-clone.sh alejandrofontan AnyFeature-VSLAM AnyFeature-VSLAM-DEV"
@@ -780,21 +786,27 @@ install = { cmd = "./build.sh", cwd = "Baselines/AnyFeature-VSLAM-DEV" }
 execute-mono = { cmd = "./bin/vslamlab_anyfeature_mono",  cwd = "Baselines/AnyFeature-VSLAM-DEV" }
 
 [feature.anyfeature-dev.dependencies]
+cuda-cudart = "*"
 compilers = "*"
-ninja = ">=1.12.1 ,<1.13"
-cmake = ">=3.29.4 ,<3.32"
-pkg-config = ">=0.29.2 ,<0.30"
-eigen  = ">=3.4.0 ,<3.5.0"
-yaml-cpp = ">=0.8.0,<0.9"
-opencv = { channel = "fontan" }
+ninja = "*"
+cmake = "*"
+pkg-config = "*"
+eigen  = "*"
+yaml-cpp = "*"
+opencv = "*"
 pangolin = { channel = "fontan" }
-brisk = { channel = "fontan" }
-akaze = { channel = "fontan" }
-siftgpu = { channel = "fontan" }
+brisk-vslamlab = { channel = "fontan" }
+akaze-vslamlab = { channel = "fontan" }
+siftgpu-vslamlab = { channel = "fontan" }
 g2o = { channel = "fontan" }
 
 huggingface_hub = "*"
 pandas = "*"
+glew = "*"
+
+pytorch-gpu = "*"
+git-lfs = "*"
+zlib = "*"
 
 # ########################################################################################################################
 # ########################################################################################################################
@@ -949,3 +961,45 @@ einops = "*"
 pyproj = ">=3.7.1,<4"
 psutil = "*"
 timm = ">=1.0.15,<2"
+
+########################################################################################################################
+########################################################################################################################
+# allfeature-dev
+[feature.allfeature-dev]
+channels = ["https://prefix.dev/conda-forge", "fontan"]
+platforms = ["linux-64"]
+
+[feature.allfeature-dev.system-requirements]
+cuda = "12.0"
+
+[feature.allfeature-dev.tasks]
+git-clone = "./git-clone.sh alejandrofontan AllFeature-VSLAM AllFeature-VSLAM-DEV"
+install = { cmd = "./build.sh", cwd = "Baselines/AllFeature-VSLAM-DEV" }
+execute-mono = { cmd = "./bin/vslamlab_allfeature_mono",  cwd = "Baselines/AllFeature-VSLAM-DEV" }
+stream = { cmd = "./bin/vslamlab_allfeature_mono_stream",  cwd = "Baselines/AllFeature-VSLAM-DEV" }
+
+[feature.allfeature-dev.dependencies]
+cuda-cudart = "*"
+compilers = "*"
+ninja = "*"
+cmake = "*"
+pkg-config = "*"
+eigen  = "*"
+yaml-cpp = "*"
+opencv = "4.12.*"
+pangolin = { channel = "fontan" }
+brisk-vslamlab = { channel = "fontan" }
+akaze-vslamlab = { channel = "fontan" }
+siftgpu-vslamlab = { channel = "fontan" }
+g2o = { channel = "fontan" }
+
+huggingface_hub = "*"
+pandas = "*"
+glew = "*"
+
+pytorch-gpu = "*"
+git-lfs = "*"
+zlib = "*"
+
+[feature.allfeature-dev.pypi-dependencies]
+intel-openmp = "*"

@@ -1,0 +1,26 @@
+dataset_name: lizardisland
+
+rgb_hz: 10.0
+dataset_folder_raw: /home/alejandro/VSLAM-LAB-Benchmark/Serena_Mou_Data
+modes: ['mono']
+cam_models: ['pinhole']
+target_resolution: [640, 480]
+
+sequence_names:
+  - LIRS_Feb_24
+  - LIRS_Mar_24_GoPro1
+  
+  # - LIRS_Mar_24_GoPro2  
+  # - LIRS_Sep_25_GoPro1
+  # - LIRS_Sep_25_GoPro2
+
+  - LIRS_Feb_24-s01
+  - LIRS_Mar_24_GoPro1-s01
+  - LIRSall-s01
+
+subsets:
+  LIRS_Feb_24-s01: [LIRS_Feb_24, "rgb_0/G0022975.JPG", 5.0] # parent sequence, target image path, radius in meters
+  LIRS_Mar_24_GoPro1-s01: [LIRS_Mar_24_GoPro1, "rgb_0/G0015930.JPG", 5.0]
+
+combined:
+  LIRSall-s01: [LIRS_Feb_24-s01, LIRS_Mar_24_GoPro1-s01]

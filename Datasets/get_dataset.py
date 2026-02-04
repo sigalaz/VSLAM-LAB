@@ -29,10 +29,13 @@ from Datasets.dataset_files.dataset_msd import MSD_dataset
 from Datasets.dataset_files.dataset_openloris import OPENLORIS_d400_dataset
 from Datasets.dataset_files.dataset_openloris import OPENLORIS_t265_dataset
 
+# Not Released Yet
+from Datasets.dataset_files.dataset_lizardisland import LIZARDISLAND_dataset
+from Datasets.dataset_files.dataset_squidle import SCOTTREEF_dataset   
+
 # Development
 from Datasets.dataset_vitum import VITUM_dataset
 from Datasets.dataset_scannetplusplus import SCANNETPLUSPLUS_dataset
-from Datasets.dataset_lizardisland import LIZARDISLAND_dataset
 from Datasets.dataset_ariel import ARIEL_dataset
 from Datasets.dataset_monotum import MONOTUM_dataset
 from Datasets.dataset_drunkards import DRUNKARDS_dataset
@@ -48,6 +51,7 @@ from Datasets.dataset_videos import VIDEOS_dataset
 from Datasets.dataset_sweetcorals import SWEETCORALS_dataset
 from Datasets.dataset_ntnu_arl_uw import NTNU_ARL_UW_dataset
 from Datasets.dataset_reefslam import REEFSLAM_dataset
+from Datasets.dataset_files.dataset_iphone import IPHONE_dataset
 
 SCRIPT_LABEL = f"\033[95m[{Path(__file__).name}]\033[0m "
 
@@ -73,10 +77,14 @@ def get_dataset(dataset_name, benchmark_path):
         "openloris-d400": lambda: OPENLORIS_d400_dataset(benchmark_path),
         "openloris-t265": lambda: OPENLORIS_t265_dataset(benchmark_path),
 
+        # Not Released Yet
+        "lizardisland": lambda: LIZARDISLAND_dataset(benchmark_path),
+        "scottreef": lambda: SCOTTREEF_dataset(benchmark_path),
+        
         # Development
         "vitum": lambda: VITUM_dataset(benchmark_path),
         "scannetplusplus": lambda: SCANNETPLUSPLUS_dataset(benchmark_path),
-        "lizardisland": lambda: LIZARDISLAND_dataset(benchmark_path),
+        
         "hamlyn": lambda: HAMLYN_dataset(benchmark_path),
         "drunkards": lambda: DRUNKARDS_dataset(benchmark_path),
         "ariel": lambda: ARIEL_dataset(benchmark_path),
@@ -92,6 +100,7 @@ def get_dataset(dataset_name, benchmark_path):
         "sweetcorals": lambda: SWEETCORALS_dataset(benchmark_path),
         "ntnu_arl_uw": lambda: NTNU_ARL_UW_dataset(benchmark_path),
         "reefslam": lambda: REEFSLAM_dataset(benchmark_path),
+        "iphone": lambda: IPHONE_dataset(benchmark_path),
     }
 
     return switcher.get(dataset_name, lambda: "Invalid case")()
