@@ -91,7 +91,7 @@ def evo_get_accuracy(zip_files, accuracy_csv):
     ZIP_CHUNK_SIZE = 500
     zip_files.sort()
     zip_files_chunks = [zip_files[i:i + ZIP_CHUNK_SIZE] for i in range(0, len(zip_files), ZIP_CHUNK_SIZE)]
-    zip_files_chunks = [' '.join(file for file in chunk) for chunk in zip_files_chunks]
+    zip_files_chunks = [' '.join(str(file) for file in chunk) for chunk in zip_files_chunks]
 
     for zip_file_chunk in zip_files_chunks:
         if os.path.exists(accuracy_csv):

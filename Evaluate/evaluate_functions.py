@@ -43,7 +43,10 @@ def evaluate_sequence(exp, dataset, sequence_name, overwrite=False):
             exp_it = str(row["exp_it"]).zfill(5) 
             runs_to_evaluate.append(exp_it)
 
-    print_msg(SCRIPT_LABEL, f"Evaluating '{evaluation_folder.replace(sequence_name, f"{dataset.dataset_color}{sequence_name}\033[0m")}'")
+    print_msg(
+        SCRIPT_LABEL,
+        f"Evaluating '{str(evaluation_folder).replace(sequence_name, f'{dataset.dataset_color}{sequence_name}\033[0m')}'"
+    )
     if len(runs_to_evaluate) == 0:
         exp_log.to_csv(exp.log_csv, index=False)
         return
