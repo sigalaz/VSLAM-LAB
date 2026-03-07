@@ -1,13 +1,13 @@
-import os
 import csv
-import yaml
-import gdown
-import pandas as pd
-import subprocess
-import numpy as np
-from typing import Any
+import os
 from pathlib import Path
+from typing import Any
+import subprocess
 
+import gdown
+import numpy as np
+import pandas as pd
+import yaml
 
 from Datasets.DatasetVSLAMLab import DatasetVSLAMLab
 
@@ -15,8 +15,9 @@ SCRIPT_LABEL = f"\033[95m[{os.path.basename(__file__)}]\033[0m "
 
 ROSBAG_NAME = f"rosbag.db3"
 IMU_TOPIC = "/imu/data_raw"
-IMAGE_TOPIC =  "/image_raw/compressed"
+IMAGE_TOPIC = "/image_raw/compressed"
 CALIBRATION_FILE = "kalibr_imucam_chain.yaml"
+
 
 class HILTI2026_dataset(DatasetVSLAMLab):
     """HILTI 2026 dataset helper for VSLAM-LAB benchmark."""
@@ -31,18 +32,17 @@ class HILTI2026_dataset(DatasetVSLAMLab):
         # Get download url
         self.url_download_root: str = cfg["url_download_root"]
 
-        # Create sequence_nicknames
+        # Sequence nicknames
         self.sequence_nicknames = [s.split('_', 1)[0] for s in self.sequence_names]
 
     def download_sequence_data(self, sequence_name: str) -> None:
-        
         sequence_path = self.dataset_path / sequence_name
 
-        # Download calibration file 
+        # Download calibration file
         calibration_file = self.dataset_path / CALIBRATION_FILE
         if not calibration_file.exists():
             folder_id = "1kYxgaCAtsVLe1B1MGsc2kR6RnByloHUV"
-            
+
             file_url = f"https://drive.google.com/file/d/1MX_C9kphWyghcQKNN-x70SquzepN588k/view?usp=sharing"
             gdown.download(
                 url=file_url,
@@ -51,11 +51,11 @@ class HILTI2026_dataset(DatasetVSLAMLab):
                 use_cookies=False,
                 resume=True,
                 fuzzy=True,
-            )  
+            )
 
-        # Download groundtruth file 
+        # Download groundtruth file
         gt_url = self._get_gt_url(sequence_name)
-        gt_file = sequence_path / "groundtruth.txt" 
+        gt_file = sequence_path / "groundtruth.txt"
         if gt_url is not None and not gt_file.exists():
             gdown.download(
                 url=gt_url,
@@ -65,7 +65,7 @@ class HILTI2026_dataset(DatasetVSLAMLab):
                 resume=True,
                 fuzzy=True,
             )
-        
+
         # Download rosbag
         rosbag = sequence_path / ROSBAG_NAME
         if rosbag.exists():
@@ -79,7 +79,7 @@ class HILTI2026_dataset(DatasetVSLAMLab):
             use_cookies=False,
             remaining_ok=True,
             resume=True,
-        )        
+        )
 
     def create_rgb_folder(self, sequence_name: str) -> None:
         sequence_path = self.dataset_path / sequence_name
@@ -91,7 +91,7 @@ class HILTI2026_dataset(DatasetVSLAMLab):
                 continue
             rgb_path.mkdir(parents=True, exist_ok=True)
             command = f"pixi run -e ros2 extract-ros2bag-frames --rosbag_path {rosbag} --sequence_path {sequence_path} --image_topic {image_topic} --cam {cam}"
-            subprocess.run(command, shell=True)     
+            subprocess.run(command, shell=True)
 
     def create_rgb_csv(self, sequence_name: str) -> None:
         pass
@@ -114,13 +114,13 @@ class HILTI2026_dataset(DatasetVSLAMLab):
         rgb_1_ts_col = "ts_rgb_1 (ns)"
         imu_ts_col = "ts (ns)"
 
-        imu[imu_ts_col] = imu[imu_ts_col].astype("int64") 
-        rgb[rgb_0_ts_col] = rgb[rgb_0_ts_col].astype("int64") 
-        rgb[rgb_1_ts_col] = rgb[rgb_1_ts_col].astype("int64") 
+        imu[imu_ts_col] = imu[imu_ts_col].astype("int64")
+        rgb[rgb_0_ts_col] = rgb[rgb_0_ts_col].astype("int64")
+        rgb[rgb_1_ts_col] = rgb[rgb_1_ts_col].astype("int64")
 
         rgb.to_csv(rgb_csv, index=False)
         imu.to_csv(imu_csv, index=False)
-        
+
     def create_calibration_yaml(self, sequence_name: str) -> None:
         calibration_yaml = self.dataset_path / CALIBRATION_FILE
 
@@ -145,13 +145,13 @@ class HILTI2026_dataset(DatasetVSLAMLab):
                 "distortion_type": "equid4", "distortion_coefficients": cam0["distortion_coeffs"],
                 "fps": self.rgb_hz,
                 "T_BS": np.linalg.inv(T_cam0_imu)}
-        
+
         rgb1: dict[str, Any] = {"cam_name": "rgb_1", "cam_type": "gray",
                 "cam_model": "pinhole", "focal_length": cam1["intrinsics"][0:2], "principal_point": cam1["intrinsics"][2:4],
                 "distortion_type": "equid4", "distortion_coefficients": cam1["distortion_coeffs"],
                 "fps": self.rgb_hz,
                 "T_BS": np.linalg.inv(T_cam1_imu)}
-        
+
         imu: dict[str, Any] = {"imu_name": "imu_0",
             "a_max":  176.0, "g_max": 7.8,
             "sigma_g_c": 0.00047032046, "sigma_a_c": 0.00285891188,
@@ -161,7 +161,7 @@ class HILTI2026_dataset(DatasetVSLAMLab):
             "s_a":  [ 1.0,  1.0, 1.0 ],
             "fps": 1000.0,
             "T_BS": np.array(np.eye(4)).reshape((4, 4))}
-        
+
         self.write_calibration_yaml(sequence_name=sequence_name, rgb=[rgb0, rgb1], imu=[imu])
 
     def create_groundtruth_csv(self, sequence_name: str) -> None:
@@ -180,7 +180,7 @@ class HILTI2026_dataset(DatasetVSLAMLab):
                     s = line.strip()
                     parts = s.split()
                     ts_ns = int(float(parts[0]) * 1e9)
-                    new_line = f"{ts_ns}," + ",".join(parts[1:]) + "\n"    
+                    new_line = f"{ts_ns}," + ",".join(parts[1:]) + "\n"
                     fout.write(new_line)
         else:
              with open(tmp, "w", newline="", encoding="utf-8") as fout:
@@ -224,11 +224,11 @@ class HILTI2026_dataset(DatasetVSLAMLab):
         if sequence_name == "floor_6_2025_12_02_run_1":
            return "10ngMYxUxKuWrBQzJIorKPyLGvofzpTFX"
         if sequence_name == "floor_6_2025_12_02_run_2":
-           return "1CkU7--2PP0k58m1RRBD5PQygKGAiNQTn"   
+           return "1CkU7--2PP0k58m1RRBD5PQygKGAiNQTn"
         if sequence_name == "floor_7_2025_12_02_run_1":
            return "1PB-ILVt4pyoFrAjgvzfSosMepdv8af9V"
         if sequence_name == "floor_7_2025_12_02_run_2":
-           return "1aCebuVIX9-buMyb_ji4sCvwNo1rFhoLq"        
+           return "1aCebuVIX9-buMyb_ji4sCvwNo1rFhoLq"
         if sequence_name == "floor_7_2025_12_03":
            return "1MfhlsR5rB_1fVccTFGll3xozAsHgQamw"
         if sequence_name == "floor_EG_2025_10_16":
@@ -236,9 +236,9 @@ class HILTI2026_dataset(DatasetVSLAMLab):
         if sequence_name == "floor_EG_2025_12_02_run_1":
            return "1S2c3u8C1vc9YgXtcIuXZuPLmMzVPHr2r"
         if sequence_name == "floor_EG_2025_12_02_run_2":
-           return "159sCP0DbkOiNF8n83BhSFDUMW-jzaZFX"      
+           return "159sCP0DbkOiNF8n83BhSFDUMW-jzaZFX"
         if sequence_name == "floor_UG1_2025_05_19":
-           return "1E5syGjNmzhQdvJ0F-92nkbWEsVfnxxm9"  
+           return "1E5syGjNmzhQdvJ0F-92nkbWEsVfnxxm9"
         if sequence_name == "floor_UG1_2025_06_18":
            return "1ZWrFeP0BPnXCOsctbRPc4C6oUfEqYYUZ"
         if sequence_name == "floor_UG1_2025_10_16":
@@ -251,7 +251,7 @@ class HILTI2026_dataset(DatasetVSLAMLab):
            return "1aUwNFRRs3u6KQgHxmQQGLbsKe_9xlvSM"
         if sequence_name == "floor_UG2_2025_12_02":
            return "1j_Uzae7lpmStVGUFZYV_ghQC_R5jF6nA"
-        
+
     def _get_gt_url(self, sequence_name):
         if sequence_name == "floor_1_2025_05_05":
            return "https://drive.google.com/file/d/1vfSWB1MKa2OGWZXxt6TkmI_kvvf5CupX/view?usp=sharing"
@@ -264,6 +264,5 @@ class HILTI2026_dataset(DatasetVSLAMLab):
         if sequence_name == "floor_UG1_2025_10_16":
            return "https://drive.google.com/file/d/1RZC-DYTN0-rtKNQCxhLjtrcs_CdhP88s/view?usp=sharing"
         return None
-        
-            
-        
+
+
