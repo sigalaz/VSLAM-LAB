@@ -197,17 +197,17 @@ class SQUIDLE_dataset(DatasetVSLAMLab):
 
     def create_rgb_csv(self, sequence_name: str) -> None:
         pass
-    
+
     def create_calibration_yaml(self, sequence_name: str) -> None:
-            fx, fy, cx, cy = 541.23264971053754, 540.15949426606903, 303.5, 252.5
-            k1, k2, p1, p2 = -0.13550656740042918, 0.098107383724544889, 0.0034368092978441836, 0.00020844832739732105
-            rgb0: dict[str, Any] = {"cam_name": "rgb_0", "cam_type": "rgb",
-                    "cam_model": "pinhole", "focal_length": [fx, fy], "principal_point": [cx, cy],
-                    "distortion_coefficients": [k1, k2, p1, p2],
-                    "distortion_type": "radtan4",
-                    "fps": float(self.rgb_hz),
-                    "T_BS": np.eye(4)}
-            self.write_calibration_yaml(sequence_name=sequence_name, rgb=[rgb0])
+        fx, fy, cx, cy = 541.23264971053754, 540.15949426606903, 303.5, 252.5
+        k1, k2, p1, p2 = -0.13550656740042918, 0.098107383724544889, 0.0034368092978441836, 0.00020844832739732105
+        rgb0: dict[str, Any] = {"cam_name": "rgb_0", "cam_type": "rgb",
+            "cam_model": "pinhole", "focal_length": [fx, fy], "principal_point": [cx, cy],
+            "distortion_coefficients": [k1, k2, p1, p2],
+            "distortion_type": "radtan4",
+            "fps": float(self.rgb_hz),
+            "T_BS": np.eye(4)}
+        self.write_calibration_yaml(sequence_name=sequence_name, rgb=[rgb0])
 
     # def create_calibration_yaml(self, sequence_name: str) -> None:
         # fx, fy, cx, cy = 0.0, 0.0, 0.0, 0.0
@@ -319,8 +319,8 @@ class SESOKO_dataset(SQUIDLE_dataset):
         dfs_rgb = []
         dfs_pose = []
         for subset in self.combined.get(sequence_name):
-            if f"s{sequence_name[-2:]}" not in subset:
-                continue;
+            # if f"s{sequence_name[-2:]}" not in subset:
+            #     continue;
             parent_sequence_path = self.dataset_path / subset
             parent_rgb_csv = parent_sequence_path / "rgb.csv"
             parent_gt_csv = parent_sequence_path / "groundtruth.csv"
